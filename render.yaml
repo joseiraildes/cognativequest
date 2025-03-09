@@ -1,0 +1,12 @@
+services:
+  - name: cognativequest
+    type: web
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: nodemon index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: PORT
+        value: 3000
