@@ -14,7 +14,6 @@
     "express": "^4.21.2",
     "express-handlebars": "^8.0.1",
     "http": "^0.0.1-security",
-    "mysql2": "^3.13.0",
     "nodemon": "^3.1.9",
     "sequelize": "^6.37.6",
     "socket.io": "^4.8.1",
@@ -23,6 +22,7 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9",
+    "mysql2": "^3.13.0",
     "utf-8-validate": "^6.0.5"
   }
 }
