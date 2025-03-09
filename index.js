@@ -66,20 +66,20 @@ app.get("/", async(req, res)=>{
 // })
 
 app.get("/game", async(req, res)=>{
-  // res.sendFile(path.join(__dirname + "/views/game.html"))
-  const ip = await Ip()
+  res.sendFile(path.join(__dirname + "/views/game.html"))
+  // const ip = await Ip()
 
-  const user = await Score.findOne({
-    where: {
-      ip
-    }
-  })
+  // const user = await Score.findOne({
+  //   where: {
+  //     ip
+  //   }
+  // })
 
-  if(user === null){
-    res.redirect("/")
-  }else{
-    res.sendFile(path.join(__dirname + "/views/game.html"))
-  }
+  // if(user === null){
+  //   res.redirect("/")
+  // }else{
+  //   res.sendFile(path.join(__dirname + "/views/game.html"))
+  // }
 })
 
 const players = {}
