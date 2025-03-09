@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>CognateQuest - Jogo</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/style.css">
+  </head>
+
+  <body>
+    <div id="game-container">
+      <h1 style="text-align: center;">
+        CognateQuest
+      </h1>
+      <div id="word-display"></div>
+      <!-- <input id="username" type="text" value="" readonly class="form-control" /> -->
+      <div class="d-grid gap-2 mb-3">
+        <button id="start-btn" class="btn btn-dark">Iniciar</button>
+      </div>
+      <div class="text-center">
+        <button class="choice-btn btn btn-success" id="cognate-btn">Cognata</button>
+        <button class="choice-btn btn btn-danger" id="non-cognate-btn">Não Cognata</button>
+      </div>
+
+      <h3 id="score" class="text-center">
+        Pontuação: 0
+      </h3>
+    </div>
+
+    <div id="scoreboard">
+      <div class="container mt-4">
+        <h2 class="text-center">Usuários</h2>
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Pontuação</th>
+            </tr>
+          </thead>
+          <tbody id="score-list"></tbody>
+        </table>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const words = [
+        { word: "Animal", cognate: true }, { word: "Book", cognate: false },
+        { word: "Color", cognate: true }, { word: "Car", cognate: false },
+        { word: "Doctor", cognate: true }, { word: "Bird", cognate: false },
+        { word: "Music", cognate: true }, { word: "Chair", cognate: false },
+        { word: "Hospital", cognate: true }, { word: "Door", cognate: false }
+      ];
+
+      // let currentWord;
+      // let score = 0
+
+      // document.getElementById("start-btn").addEventListener("click", nextWord)
+      // document.getElementById("cognate-btn").addEventListener("click", () => checkAnswer(true))
+      // document.getElementById("non-cognate-btn").addEventListener("click", () => checkAnswer(false))
+
+      // function nextWord(){
+      //   currentWord = words[Math.floor(Math.random() * words.length)];
+      //   document.getElementById("word-display").textContent = currentWord.word;
+      // }
+
+      // function checkAnswer(isCognate){
+      //   if(currentWord && currentWord.cognate === isCognate){
+      //     score += 10
+      //   }
+
+      //   document.getElementById("score").textContent = `Pontuação => ${score}`
+
+      //   nextWord()
+      // }
+      let currentWord = null;
+      let score = 0;
+      const wordDisplay = document.getElementById("word-display");
+      const scoreDisplay = document.getElementById("score");
+      const startBtn = document.getElementById("start-btn");
+      const cognateBtn = document.getElementById("cognate-btn");
+      const nonCognateBtn = document.getElementById("non-cognate-btn");
+      const scoreList = document.getElementById("score-list");
+
+      startBtn.addEventListener("click", function () {
+        nextWord();
+        cognateBtn.disabled = false;
+        nonCognateBtn.disabled = false;
+      });
+            
+      cognateBtn.addEventListener("click", () => checkAnswer(true));
+      nonCognateBtn.addEventListener("click", () => checkAnswer(false));
+            
+      function nextWord() {
+        currentWord = words[Math.floor(Math.random() * words.length)];
+        wordDisplay.textContent = currentWord.word;
+      }
+            
+      function checkAnswer(isCognate) {
+        if (currentWord && currentWord.cognate === isCognate) {
+          score += 10;
+        }
+        scoreDisplay.textContent = `Pontuação: ${score}`;
+        socket.emit("updateScore", score)
+        nextWord();
+      }
+      
+      socket.on("scoreboardUpdate", (players) => {
+        scoreList.innerHTML = "";
+        players.forEach(player => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${player.id}</td><td>${player.score}</td>`;
+          scoreList.appendChild(row);
+        });
+      });
+    </script>
+  </body>
+</html>
